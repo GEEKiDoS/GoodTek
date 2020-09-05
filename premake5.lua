@@ -12,12 +12,11 @@ workspace "Goodtek"
 	}
 
 	buildoptions "/std:c++latest"
-	linkoptions "/LTCG"
 	systemversion "latest"
 	symbols "On"
 	staticruntime "On"
 	editandcontinue "Off"
-	warnings "Extra"
+	warnings "Off"
 	characterset "ASCII"
 
 	flags {
@@ -36,7 +35,7 @@ workspace "Goodtek"
 		optimize "Debug"
 
 	project "Goodtek"
-		targetname "gdtek"
+		targetname "goodtek"
 
 		language "C++"
 		kind "SharedLib"
@@ -52,11 +51,17 @@ workspace "Goodtek"
 			"%{prj.location}/src",
 		}
 
-		syslibdirs {
-			"./libs",
-		}
-
 		links { 
 			"capstone",
 			"PolyHook_2",
 		}
+
+		configuration "Release"
+			linkoptions "/LTCG"
+			syslibdirs {
+				"./libs/Release",
+			}
+		configuration "Debug"
+			syslibdirs {
+				"./libs/Debug",
+			}

@@ -19,7 +19,6 @@ void PatchTeknoGods()
 	// Pump that bass!
 	WriteProtectedMemoryWithString("^;Pump that Bass!", 0x100164EF);
 	WriteProtectedMemoryWithString("^2IW5MP 1.4.382\n^1TeknoMW3 2.8.0.4\n^4GOODTEK 0.1", 0x1000E8B9);
-	WriteProtectedMemoryWithString("^1GOOD^2Tekno^7MW3", 0x1004DCE8);
 
 	// Remove compassSize check, I mean, why?
 	WriteProtectedMemoryWithString("sec_sv_blocked_dvars;sec_cfg_blocked_dvars", 0x1004E654);
@@ -30,4 +29,7 @@ void PatchTeknoGods()
 	// Why exit process there? NO!
 	WriteProtectedMemory(jmp, 0x1000CD6B);
 	WriteProtectedMemory(jmp, 0x1000CD7F);
+
+	// Hey, you forgot the '\n', so We add extra branding to it lol.
+	WriteProtectedMemoryWithString("TeknoMW3 v%f by Stte&Simon with GOODTEK by GEEKiDoS. \n", 0x100178A1);
 }
