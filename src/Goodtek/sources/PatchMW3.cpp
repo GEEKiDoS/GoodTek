@@ -7,7 +7,6 @@
 
 void PatchMW3_CustomAssets();
 void PatchMW3_CustomBinding();
-void ConsoleThread();
 
 void PatchMW3()
 {
@@ -43,8 +42,6 @@ void PatchMW3()
 		}
 	).detach();
 
-	//std::thread(ConsoleThread).detach();
-
 	// RCE remote execution patch
 	std::array<uint8_t, 4> rcePatch{ 0x33, 0xc0, 0xc3, 0x90 };
 	WriteProtectedMemory(rcePatch, 0x4B5740);
@@ -55,21 +52,4 @@ void PatchMW3()
 	// party_minplayers
 	std::array<uint8_t, 1> partyPatch{ 0x1 };
 	WriteProtectedMemory(partyPatch, 0x4CF991);
-}
-
-#include "IW5.hpp"
-
-void ConsoleThread()
-{
-	char cmd[200];
-
-	while (true)
-	{
-		int count = scanf("%s", cmd);
-
-		if (!strcmp(cmd, "startparty"))
-		{
-			
-		}
-	}
 }

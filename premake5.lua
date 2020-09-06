@@ -25,6 +25,10 @@ workspace "Goodtek"
 		"MultiProcessorCompile",
 	}
 
+	defines {
+		"ZLIB_WINAPI",
+	}
+
 	staticruntime "Off"
 
 	configuration "Release"
@@ -54,14 +58,16 @@ workspace "Goodtek"
 		links { 
 			"capstone",
 			"PolyHook_2",
+			"zlibstat.lib",
 		}
 
 		configuration "Release"
-			linkoptions "/LTCG"
+			linkoptions "/LTCG /SAFESEH:NO"
 			syslibdirs {
 				"./libs/Release",
 			}
 		configuration "Debug"
+			linkoptions "/SAFESEH:NO"
 			syslibdirs {
 				"./libs/Debug",
 			}

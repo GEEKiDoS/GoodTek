@@ -9,7 +9,7 @@
 using namespace std;
 using namespace IW5;
 
-ZoneMemory* g_pCustomZoneMemory = new ZoneMemory(1024 * 400);
+ZoneMemory* g_pCustomZoneMemory = new ZoneMemory(1024 * 1024 * 100);
 
 std::map<std::string, XAssetHeader> loadedWeapons;
 
@@ -174,5 +174,5 @@ NOINLINE XAssetHeader __cdecl hkDB_FindXAssetHeader(XAssetType type, const char*
 void PatchMW3_CustomAssets()
 {
 	HOOK_DETOUR(0x5C8C60, hkDB_AddXAsset);
-	HOOK_DETOUR(0x4B25C0, hkDB_FindXAssetHeader);
+	HOOK_DETOUR(IW5::DB_FindXAssetHeader, hkDB_FindXAssetHeader);
 }

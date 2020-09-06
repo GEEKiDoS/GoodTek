@@ -1,8 +1,16 @@
 #include "common_includes.hpp"
 #include <thread>
 
+#include "IW5.hpp";
+
 void PatchMW3();
 void PatchTeknoGods();
+
+namespace Server
+{
+	void PatchMW3();
+	void PatchTeknoGods();
+}
 
 void CreateDebugConsole()
 {
@@ -20,10 +28,29 @@ BOOL APIENTRY DllMain(HMODULE, DWORD uCallReason, LPVOID)
 {
 	if (uCallReason == DLL_PROCESS_ATTACH)
 	{
-		CreateDebugConsole();
+		// Client
+		if (*(uint32_t*)0x822E30 == 0x20355749) // "IW5\x20"
+		{
+			IW5::InitFunc_Client14();
 
-		PatchTeknoGods();
-		PatchMW3();
+			CreateDebugConsole();
+
+			PatchTeknoGods();
+			PatchMW3();
+		}
+		// Server
+		else if (*(uint32_t*)0x6EA8B4 == 0x20355749)
+		{
+			IW5::InitFunc_Server14();
+
+			Server::PatchTeknoGods();
+			Server::PatchMW3();
+		}
+		else
+		{
+			MessageBox(0, "Unsupported version!", "GoodTek - Error", MB_OK);
+			exit(-1);
+		}
 	}
 
 	return true;
