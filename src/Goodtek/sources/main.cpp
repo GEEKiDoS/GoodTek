@@ -3,8 +3,11 @@
 
 #include "IW5.hpp";
 
-void PatchMW3();
-void PatchTeknoGods();
+namespace Client 
+{
+	void PatchMW3();
+	void PatchTeknoGods();
+}
 
 namespace Server
 {
@@ -35,8 +38,8 @@ BOOL APIENTRY DllMain(HMODULE, DWORD uCallReason, LPVOID)
 
 			CreateDebugConsole();
 
-			PatchTeknoGods();
-			PatchMW3();
+			Client::PatchTeknoGods();
+			Client::PatchMW3();
 		}
 		// Server
 		else if (*(uint32_t*)0x6EA8B4 == 0x20355749)

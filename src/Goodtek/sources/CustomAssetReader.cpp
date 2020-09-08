@@ -1,5 +1,7 @@
 #include "common_includes.hpp"
 
+#include <filesystem>
+
 #include "IW5.hpp"
 #include "CustomAssetReader.hpp"
 
@@ -464,7 +466,7 @@ WeaponDef* ReadWeaponDef(Json & data, WeaponCompleteDef * baseAsset, ZoneMemory 
 	return weapon;
 }
 
-WeaponCompleteDef* ReadWeapon(const std::string name, ZoneMemory* mem, DB_FindXAssetHeader_t finder)
+IW5::WeaponCompleteDef* ReadWeapon(const std::string& name, ZoneMemory* mem, IW5::DB_FindXAssetHeader_t finder)
 {
 	auto weapon = mem->Alloc<WeaponCompleteDef>();
 
@@ -637,7 +639,7 @@ WeaponCompleteDef* ReadWeapon(const std::string name, ZoneMemory* mem, DB_FindXA
 				weapon->reloadOverrides[i].reloadAddTime = data["reloadAddTime"].get<int>();
 				weapon->reloadOverrides[i].reloadEmptyAddTime = data["reloadEmptyAddTime"].get<int>();
 			}
-			catch(std::exception ex)
+			catch (std::exception ex)
 			{
 				weapon->numReloadStateTimerOverrides = 0;
 				break;
@@ -683,7 +685,7 @@ WeaponCompleteDef* ReadWeapon(const std::string name, ZoneMemory* mem, DB_FindXA
 	return weapon;
 }
 
-LoadedSound* ReadLoadedSound(const std::string name, ZoneMemory* zonemem)
+IW5::LoadedSound* ReadLoadedSound(const std::string& name, ZoneMemory* zonemem)
 {
 	auto fp = fopen(name.c_str(), "rb");
 	auto result = zonemem->Alloc<LoadedSound>();
@@ -861,4 +863,128 @@ XAnimParts* ReadXAnimParts(const std::string& path, ZoneMemory* zonemem)
 	}
 
 	return nullptr;
+}
+
+bool ReadXSurface(IW5::ModelSurface* surface, ZoneMemory* mem)
+{
+	std::string name(surface->name);
+
+	const auto path = "userraw\\xsurfaces\\"s + std::string(name) + ".xse"s;
+
+	if (std::filesystem::exists(path))
+	{
+		AssetReader read(mem);
+		read.open(path);
+
+		auto asset = read.read_array<ModelSurface>();
+		asset->name = read.read_string();
+
+		asset->xSurficies = mem->Alloc<XSurface>(asset->xSurficiesCount);
+
+		for (int i = 0; i < asset->xSurficiesCount; i++)
+		{
+			asset->xSurficies[i].tileMode = read.read_int();
+			asset->xSurficies[i].deformed = read.read_int();
+			asset->xSurficies[i].baseTriIndex = read.read_int();
+			asset->xSurficies[i].baseVertIndex = read.read_int();
+
+			for (int j = 0; j < 6; j++)
+			{
+				asset->xSurficies[i].partBits[j] = read.read_int();
+			}
+
+			// vertex
+			auto vertexInfo = read.read_array<XSurfaceVertexInfo>();
+			memcpy(&asset->xSurficies[i].vertexInfo, vertexInfo, sizeof XSurfaceVertexInfo);
+			asset->xSurficies[i].vertexInfo.vertsBlend = read.read_array<unsigned short>();
+
+			// verticies
+			asset->xSurficies[i].vertCount = read.read_int();
+			asset->xSurficies[i].verticies = read.read_array<GfxPackedVertex>();
+
+			// triangles
+			asset->xSurficies[i].triCount = read.read_int();
+			asset->xSurficies[i].triIndices = read.read_array<Face>();
+
+			// rigidVertLists
+			asset->xSurficies[i].vertListCount = read.read_int();
+			asset->xSurficies[i].rigidVertLists = read.read_array<XRigidVertList>();
+			for (int vert = 0; vert < asset->xSurficies[i].vertListCount; vert++)
+			{
+				if (asset->xSurficies[i].rigidVertLists[vert].collisionTree)
+				{
+					asset->xSurficies[i].rigidVertLists[vert].collisionTree = read.read_array<XSurfaceCollisionTree>();
+
+					if (asset->xSurficies[i].rigidVertLists[vert].collisionTree->leafs)
+					{
+						asset->xSurficies[i].rigidVertLists[vert].collisionTree->leafs = read.read_array<XSurfaceCollisionLeaf>();
+					}
+
+					if (asset->xSurficies[i].rigidVertLists[vert].collisionTree->nodes)
+					{
+						asset->xSurficies[i].rigidVertLists[vert].collisionTree->nodes = read.read_array<XSurfaceCollisionNode>();
+					}
+				}
+			}
+		}
+
+		read.close();
+
+		memcpy(surface, asset, sizeof(ModelSurface));
+		return true;
+	}
+
+	return false;
+}
+
+IW5::XModel* ReadXModel(const std::string& name, ZoneMemory* mem, IW5::XModel* baseModel)
+{
+	AssetReader read(mem);
+	read.open(name);
+
+	const auto asset = read.read_single<XModel>();
+
+	asset->name = read.read_string();
+
+	asset->boneNames = read.read_array<short>();
+	for (int i = 0; i < asset->numBones; i++)
+	{
+		asset->boneNames[i] = SL_AllocString(read.read_string());
+	}
+
+	asset->parentList = read.read_array<unsigned char>();
+	asset->tagAngles = read.read_array<XModelAngle>();
+	asset->tagPositions = read.read_array<XModelTagPos>();
+	asset->partClassification = read.read_array<char>();
+	asset->animMatrix = read.read_array<DObjAnimMat>();
+	asset->boneInfo = read.read_array<XBoneInfo>();
+
+	// surfaces
+	asset->materials = read.read_array<Material*>();
+	for (int i = 0; i < asset->numSurfaces; i++)
+	{
+		read.read_asset<Material>();
+		asset->materials[i] = baseModel->materials[0];
+	}
+
+	// lods
+	for (int i = 0; i < asset->numLods; i++)
+	{
+		asset->lods[i].surfaces = read.read_asset<ModelSurface>();
+		if (!ReadXSurface(asset->lods[i].surfaces, mem))
+		{
+			return nullptr;
+		}
+	}
+
+	// colSurfs
+	asset->colSurf = read.read_array<XModelCollSurf_s>();
+	for (int i = 0; i < asset->numColSurfs; i++)
+	{
+		asset->colSurf[i].tris = read.read_array<XModelCollTri_s>();
+	}
+
+	read.close();
+
+	return asset;
 }

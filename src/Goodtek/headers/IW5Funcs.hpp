@@ -26,6 +26,17 @@ namespace IW5
 	typedef void(__cdecl* Com_Printf_t)(const char* format, ...);
 	extern Com_Printf_t Com_Printf;
 
+	typedef dvar_t* (__cdecl* Dvar_RegisterBool_t)(const char* name, unsigned char defaultVal, int flags, const char* help);
+	extern Dvar_RegisterBool_t Dvar_RegisterBool;
+
+	typedef dvar_t* (__cdecl* Dvar_RegisterFloat_t)(const char* name, float defaultVal, float min, float max, int flags, const char* help);
+	extern Dvar_RegisterFloat_t Dvar_RegisterFloat;
+
+	typedef void (__cdecl* Sys_ShowConsole_t)();
+	extern Sys_ShowConsole_t Sys_ShowConsole;
+
+	typedef void(__cdecl* Cmd_AddCommand_t)(const char*, void (*)(), cmd_function_s*);
+	extern Cmd_AddCommand_t Cmd_AddCommand;
 
 	void InitFunc_Client14();
 	void InitFunc_Server14();

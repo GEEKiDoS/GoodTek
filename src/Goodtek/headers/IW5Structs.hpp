@@ -10,12 +10,12 @@
 
 namespace IW5 
 {
-	enum XAssetType
+	enum XAssetType:int
 	{
 		physpreset,
 		phys_collmap,
 		xanim,
-		xmodelsurfs,
+		xmodelsurfs,	
 		xmodel,
 		material,
 		pixelshader,
@@ -36,7 +36,6 @@ namespace IW5
 		gfx_map,
 		lightdef,
 		ui_map,
-		// not used
 		font,
 		menufile,
 		menu,
@@ -44,18 +43,13 @@ namespace IW5
 		attachment,
 		weapon,
 		snddriverglobals,
-		// not used
 		fx,
 		impactfx,
 		surfacefx,
 		aitype,
-		// not used
 		mptype,
-		// not used
 		character,
-		// not used
 		xmodelalias,
-		// not used
 		rawfile,
 		scriptfile,
 		stringtable,
@@ -4926,5 +4920,67 @@ namespace IW5
 		StructuredDataDefSet* structureddatadef;
 		menuDef_t* menu;
 		GfxLightDef* lightdef;
+	};
+
+	struct playerState_s
+	{
+		char pad1[8];
+		int pm_time;
+		int pm_flags;
+		char pad2[0xC];
+		float origin[3];
+		float velocity[3];
+		char pad3[0x48];
+		int jumpTime;
+		float jumpOriginZ;
+		// I dont care rest lol
+	};
+
+	enum dvar_type : char
+	{
+		DVAR_TYPE_BOOL = 0,
+		DVAR_TYPE_FLOAT = 1,
+		DVAR_TYPE_FLOAT_2 = 2,
+		DVAR_TYPE_FLOAT_3 = 3,
+		DVAR_TYPE_FLOAT_4 = 4,
+		DVAR_TYPE_INT = 5,
+		DVAR_TYPE_ENUM = 6,
+		DVAR_TYPE_STRING = 7,
+		DVAR_TYPE_COLOR = 8,
+	};
+
+	union dvar_value_t {
+		char* string;
+		int		integer;
+		float	value;
+		bool	boolean;
+		float	vec2[2];
+		float	vec3[3];
+		float	vec4[4];
+		BYTE	color[4];
+	};
+
+	union dvar_maxmin_t {
+		int i;
+		float f;
+	};
+
+	struct dvar_t
+	{
+		const char* name;
+		short			flags;
+		char			pad1[2];
+		dvar_type			type;
+		char			pad2[3];
+		dvar_value_t	current;
+		dvar_value_t	latched;
+		dvar_value_t	default;
+		dvar_maxmin_t min;
+		dvar_maxmin_t max;
+	};
+
+	struct cmd_function_s
+	{
+		char pad[12];
 	};
 }
