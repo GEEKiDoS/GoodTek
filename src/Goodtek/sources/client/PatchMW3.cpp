@@ -13,6 +13,7 @@ namespace Client
 	void PatchMW3_CustomBinding();
 	void PatchMW3_Console();
 	void PatchMW3_Jump();
+	void PatchMW3_FFCompression();
 
 	void PatchMW3()
 	{
@@ -56,5 +57,6 @@ namespace Client
 		PatchMW3_CustomBinding();
 		PatchMW3_Jump();
 		PatchMW3_Console();
+		PatchMW3_FFCompression();
 	}
 }

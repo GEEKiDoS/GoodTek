@@ -14,6 +14,8 @@ namespace IW5
 	Dvar_RegisterFloat_t	Dvar_RegisterFloat;
 	Sys_ShowConsole_t		Sys_ShowConsole;
 	Cmd_AddCommand_t		Cmd_AddCommand;
+	Load_Stream_t			Load_Stream;
+	DB_LoadXAssets_t		DB_LoadXAssets;
 
 	void InitFunc_Client14()
 	{
@@ -27,6 +29,8 @@ namespace IW5
 		Dvar_RegisterFloat = (Dvar_RegisterFloat_t)0x4A5CF0;
 		Sys_ShowConsole = (Sys_ShowConsole_t)0x515CD0;
 		Cmd_AddCommand = (Cmd_AddCommand_t)0x537E70;
+		Load_Stream = (Load_Stream_t)0x4292F0;
+		DB_LoadXAssets = (DB_LoadXAssets_t)0x4269F0;
 	}
 
 	void InitFunc_Server14()

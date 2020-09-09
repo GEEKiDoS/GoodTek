@@ -38,6 +38,12 @@ namespace IW5
 	typedef void(__cdecl* Cmd_AddCommand_t)(const char*, void (*)(), cmd_function_s*);
 	extern Cmd_AddCommand_t Cmd_AddCommand;
 
+	typedef int(__cdecl* Load_Stream_t)(bool atStreamStart, const void* ptr, int size);
+	extern Load_Stream_t Load_Stream;
+
+	typedef void(__cdecl* DB_LoadXAssets_t)(XZoneInfo* zoneInfo, unsigned int zoneCount, int sync);
+	extern DB_LoadXAssets_t DB_LoadXAssets;
+
 	void InitFunc_Client14();
 	void InitFunc_Server14();
 }

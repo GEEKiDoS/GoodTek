@@ -4983,4 +4983,11 @@ namespace IW5
 	{
 		char pad[12];
 	};
+
+	struct XZoneInfo
+	{
+		const char* zone;
+		int loadFlags;
+		int unloadFlags;
+	};
 }

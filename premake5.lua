@@ -1,3 +1,10 @@
+local _DependencyFolder = path.getabsolute("deps")
+function DependencyFolder()
+	return path.getrelative(os.getcwd(), _DependencyFolder)
+end
+
+include "deps/zstd.lua"
+
 workspace "Goodtek"
 	location "./build"
 	objdir "%{wks.location}/obj"
@@ -38,6 +45,8 @@ workspace "Goodtek"
 	configuration "Debug"
 		optimize "Debug"
 
+	zstd:project()
+
 	project "Goodtek"
 		targetname "goodtek"
 
@@ -49,11 +58,15 @@ workspace "Goodtek"
 			"./src/Goodtek/sources/**.cpp",
 		}
 
+		zstd:include()
+
 		includedirs {
 			"./src/Goodtek/headers",
 			"./includes",
 			"%{prj.location}/src",
 		}
+
+		zstd:link()
 
 		links { 
 			"capstone",

@@ -19,38 +19,6 @@ namespace Client
 	{
 		switch (type)
 		{
-		case xmodel:
-		{
-			auto baseModel = header->xmodel;
-
-			const auto path = "userraw\\xmodels\\"s + std::string(baseModel->name) + ".xme6"s;
-
-			if (std::filesystem::exists(path))
-			{
-				auto newModel = ReadXModel(path, g_pCustomZoneMemory, baseModel);
-
-				if (newModel)
-				{
-					newModel->name = strdup(baseModel->name);
-
-					for (int i = 0; i < newModel->numLods; i++)
-					{
-						newModel->lods[i].surfaces->name = strdup(baseModel->lods[i].surfaces->name);
-
-						memcpy(baseModel->lods[i].surfaces, newModel->lods[i].surfaces, sizeof(ModelSurface));
-
-						newModel->lods[i].surfaces = baseModel->lods[i].surfaces;
-						printf("Loaded XModelSurface %s from userraw\n", newModel->lods[i].surfaces->name);
-					}
-					
-					//memcpy(baseModel, newModel, sizeof(XModel));
-
-					printf("Loaded XModel %s from userraw\n", baseModel->name);
-				}
-			}
-
-			break;
-		}
 		case xanim:
 		{
 			const auto path = "userraw\\xanims\\"s + std::string(header->xanimparts->name) + ".xae2"s;

@@ -57,3 +57,12 @@ inline void WriteProtectedMemoryWithString(const char* string, uintptr_t pDestin
 
     std::copy(addr, addr + 4, reinterpret_cast<uint8_t*>(pDestination));
 }
+
+inline void WriteProtectedMemoryWithFunction(uintptr_t function, uintptr_t pDestination)
+{
+    uint8_t* addr = (uint8_t*)&function;
+
+    PLH::MemoryProtector mp(pDestination, 4, PLH::R | PLH::W | PLH::X);
+
+    std::copy(addr, addr + 4, reinterpret_cast<uint8_t*>(pDestination));
+}
